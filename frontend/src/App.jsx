@@ -93,6 +93,17 @@ const App = () => {
       <button type="submit">login</button>
     </form>      
   )
+  const addBlog = (blogObject) =>{
+    blogService
+    .create(blogObject)
+      .then(returnedBlog => {
+      setBlogs(blogs.concat(returnedBlog))
+      setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    })
+  }
 
   return (
     <div>
@@ -100,7 +111,7 @@ const App = () => {
       {!user && loginForm()}
       {user && <div>
        <p>{user.name} logged in <button onClick={logout}>log out</button></p>
-         <BlogForm/>
+         <BlogForm createBlog = {addBlog}/>
       </div>
     } 
 

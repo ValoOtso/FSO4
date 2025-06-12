@@ -1,8 +1,20 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
 
-const BlogForm = () => {
+  return (
+    <div className="message">
+      {message}
+    </div>
+  )
+}
+
+
+const BlogForm = ({createBlog}) => {
     const [blogs, setBlogs] = useState([])
     const [newBlog, setNewBlog] = useState('')
     const [title, setTitle] = useState('')
@@ -13,23 +25,14 @@ const BlogForm = () => {
 
     const addBlog = (event) => {
     event.preventDefault()
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url
-    }
-    blogService
-    .create(blogObject)
-      .then(returnedBlog => {
-      setBlogs(blogs.concat(returnedBlog))
-      setMessage(`a new blog ${title} by ${author} added`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
+    createBlog({
+        title: title,
+        author: author,
+        url: url
     })
+    setTitle('')
+    setAuthor('')
+    setUrl('')
   }
   const blogForm = () => {
     const hideWhenVisible = { display: addBlogVisible ? 'none' : '' }
@@ -62,7 +65,7 @@ const BlogForm = () => {
               onChange={({ target }) => setUrl(target.value)}
             />
           </div>
-          <button type="submit">save</button>
+          <button onClick={() => setAddBlogVisible(false)} type="submit">save</button>
         </form>
         <button onClick={() => setAddBlogVisible(false)}>cancel</button>
       </div>
