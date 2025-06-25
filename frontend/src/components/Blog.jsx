@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import blogService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeBlog }) => {
   const [visible, setVisible] = useState(false)
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
@@ -10,6 +11,16 @@ const Blog = ({ blog }) => {
     setVisible(!visible)
   }
 
+  const handleLike = () => {
+    likeBlog({
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      user: blog.user,
+      likes: blog.likes
+    })
+  }
+
   return (
   <div className="blog">
     <div>{blog.title} {blog.author}
@@ -17,10 +28,10 @@ const Blog = ({ blog }) => {
       <button style={showWhenVisible} onClick={toggleVisibility}>hide</button>
     </div>
     <div style={showWhenVisible}>{blog.url}</div>
-    <div style={showWhenVisible}>likes {blog.likes || 0}
-      <button>like</button>
+    <div style={showWhenVisible}>Tykkäykset: {blog.likes || 0}
+      <button onClick={handleLike(blog.id)}>like</button>
     </div>
-    <div style={showWhenVisible}>{blog.user}</div>{/*KORJAA BACKENDIIN POPULATE FROM 4.C */} 
+    <div style={showWhenVisible}>Lisännyt: {blog.user.name}</div>
   </div>  
 )}
 

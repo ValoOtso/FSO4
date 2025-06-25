@@ -105,6 +105,14 @@ const App = () => {
     })
   }
 
+  const handleLike = (blogObject) => {
+    blogService
+        .put(blogObject)
+          .then(returnedBlog => {
+          setBlogs(blogs.concat(returnedBlog))
+          })
+        }
+
   return (
     <div>
       <Notification message = {message}/>
@@ -117,7 +125,7 @@ const App = () => {
 
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} likeBlog={handleLike} />
       )}
     </div>
   )
