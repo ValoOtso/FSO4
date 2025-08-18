@@ -18,16 +18,18 @@ const Notification = ({ message }) => {
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
-  
+
+  blogs.sort(({ likes:a }, { likes:b }) => b-a)
+
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -48,7 +50,7 @@ const App = () => {
       })
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -71,61 +73,69 @@ const App = () => {
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
-      <h2>Login</h2>
+        <h2>Login</h2>
 
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
           onChange={({ target }) => setUsername(target.value)}
+          placeholder='username'
         />
       </div>
       <div>
         password
-          <input
+        <input
           type="password"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
+          placeholder='password'
         />
       </div>
       <button type="submit">login</button>
-    </form>      
+    </form>
   )
-  const addBlog = (blogObject) =>{
+  const addBlog = (blogObject) => {
     blogService
-    .create(blogObject)
+      .create(blogObject)
       .then(returnedBlog => {
-      setBlogs(blogs.concat(returnedBlog))
-      setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-    })
+        setBlogs(blogs.concat(returnedBlog))
+        setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
   }
 
-  const handleLike = (blogObject) => {
+  const handleLike = (id, updatedBlog) => {
     blogService
-        .put(blogObject)
-          .then(returnedBlog => {
-          setBlogs(blogs.concat(returnedBlog))
-          })
-        }
+      .put(id, updatedBlog)
+      .then(returnedBlog => {
+        setBlogs(blogs.map(b => b.id === id ? returnedBlog : b))
+      })
+  }
+
+  const handleDelete = (id) => {
+    blogService
+      .remove(id)
+    location.reload()
+  }
 
   return (
     <div>
       <Notification message = {message}/>
       {!user && loginForm()}
       {user && <div>
-       <p>{user.name} logged in <button onClick={logout}>log out</button></p>
-         <BlogForm createBlog = {addBlog}/>
+        <p>{user.name} logged in <button onClick={logout}>log out</button></p>
+        <BlogForm createBlog = {addBlog}/>
       </div>
-    } 
+      }
 
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} likeBlog={handleLike} />
+        <Blog key={blog.id} blog={blog} likeBlog={handleLike} deleteBlog={handleDelete} />
       )}
     </div>
   )
