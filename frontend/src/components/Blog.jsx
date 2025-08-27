@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, likeBlog, deleteBlog }) => {
+const Blog = ({ blog, likeBlog, deleteBlog, currentUser }) => {
   const [visible, setVisible] = useState(false)
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
@@ -28,18 +28,24 @@ const Blog = ({ blog, likeBlog, deleteBlog }) => {
 
   }
 
+  const canRemove = currentUser?.username === blog.user?.username
+
   return (
     <div className="blog">
       <div className='title'>{blog.title} {blog.author}
-        <button style={hideWhenVisible} onClick={toggleVisibility}>view</button>
-        <button style={showWhenVisible} onClick={toggleVisibility}>hide</button>
+        <button role='button' style={hideWhenVisible} onClick={toggleVisibility}>view</button>
+        <button role='button' style={showWhenVisible} onClick={toggleVisibility}>hide</button>
       </div>
       <div className='url' style={showWhenVisible}>{blog.url}</div>
       <div className='likes' style={showWhenVisible}>Tykkäykset: {blog.likes || 0}
-        <button onClick={handleLike}>like</button>
+        <button role='button' onClick={handleLike}>like</button>
       </div>
       <div className='user' style={showWhenVisible}>Lisännyt: {blog.user.name}</div>
-      <button onClick={handleDelete}>remove</button>
+      <div>
+        {canRemove && (
+        <button role='button' onClick={handleDelete}>remove</button>
+      )}
+        </div>
     </div>
   )}
 

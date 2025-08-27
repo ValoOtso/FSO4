@@ -94,7 +94,7 @@ const App = () => {
           placeholder='password'
         />
       </div>
-      <button type="submit">login</button>
+      <button role='button' type="submit">login</button>
     </form>
   )
   const addBlog = (blogObject) => {
