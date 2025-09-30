@@ -1,88 +1,101 @@
-import { useState } from 'react'
-import blogService from '../services/blogs'
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import blogService from "../services/blogs";
+import { showNotification } from "../reducers/notificationReducer";
+import { createBlog } from "../reducers/blogReducer";
 
-const Notification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
-
-  return (
-    <div className="message">
-      {message}
-    </div>
-  )
-}
-
-
-const BlogForm = ({ createBlog }) => {
-  const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
-  const [message, setMessage] = useState(null)
-  const [addBlogVisible, setAddBlogVisible] = useState(false)
+const BlogForm = () => {
+  const [blogs, setBlogs] = useState([]);
+  const [newBlog, setNewBlog] = useState("");
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
+  const [addBlogVisible, setAddBlogVisible] = useState(false);
+  const dispatch = useDispatch();
 
   const addBlog = (event) => {
-    event.preventDefault()
-    createBlog({
+    event.preventDefault();
+    const content = {
       title: title,
       author: author,
       url: url,
-      likes: 0
-    })
-    setTitle('')
-    setAuthor('')
-    setUrl('')
-  }
+      likes: 0,
+    };
+    setTitle("");
+    setAuthor("");
+    setUrl("");
+    dispatch(createBlog(content));
+    dispatch(
+      showNotification(
+        `a new blog ${content.title} by ${content.author} added`,
+        5,
+      ),
+    );
+  };
+
   const blogForm = () => {
-    const hideWhenVisible = { display: addBlogVisible ? 'none' : '' }
-    const showWhenVisible = { display: addBlogVisible ? '' : 'none' }
-    return(
+    const hideWhenVisible = { display: addBlogVisible ? "none" : "" };
+    const showWhenVisible = { display: addBlogVisible ? "" : "none" };
+    return (
       <div>
         <div style={hideWhenVisible}>
-          <button role='button' onClick={() => setAddBlogVisible(true)}>Add new blog</button>
+          <button
+            type="button"
+            className="button btn btn-outline-dark"
+            role="button"
+            onClick={() => setAddBlogVisible(true)}
+          >
+            Add new blog
+          </button>
         </div>
         <div style={showWhenVisible}>
           <form onSubmit={addBlog}>
             <div>
-            title
+              Title
               <input
-                placeholder='title'
+                placeholder="title"
                 value={title}
                 onChange={({ target }) => setTitle(target.value)}
               />
             </div>
             <div>
-            author
+              Author
               <input
-                placeholder='author'
+                placeholder="author"
                 value={author}
                 onChange={({ target }) => setAuthor(target.value)}
               />
             </div>
             <div>
-            url
+              Url
               <input
-                placeholder='url'
+                placeholder="url"
                 value={url}
                 onChange={({ target }) => setUrl(target.value)}
               />
             </div>
-            <button role='button' onClick={() => setAddBlogVisible(false)} type="submit">save</button>
+            <button
+              className="btn btn-success"
+              role="button"
+              onClick={() => setAddBlogVisible(false)}
+              type="submit"
+            >
+              Save
+            </button>
           </form>
-          <button role='button' onClick={() => setAddBlogVisible(false)}>cancel</button>
+          <button
+            className="btn btn-secondary"
+            role="button"
+            onClick={() => setAddBlogVisible(false)}
+          >
+            Cancel
+          </button>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
-  return(
-    <div>
-      {blogForm()}
-    </div>
+  return <div>{blogForm()}</div>;
+};
 
-  )
-}
-
-export default BlogForm
+export default BlogForm;
